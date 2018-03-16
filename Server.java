@@ -18,14 +18,14 @@ public class Server {
 	Map<PrintWriter, String> list_clientWriter;
 	ArrayList<Thread> clientThread = new ArrayList<Thread>();
 
-	final int LEVEL_ERROR = 1;
-	final int LEVEL_NORMAL = 0;
+	final int ERROR = 1;
+	final int NORMAL = 0;
 
 	public static void main(String[] args) {
 		Server s = new Server();
 		if (s.runServer()) {
 
-			// start a new thread
+			// starts a new thread (=innere Methode)
 			Thread t = new Thread(new Runnable() {
 				public void run() {
 					try {
@@ -38,7 +38,7 @@ public class Server {
 			});
 			t.start();
 			Scanner scanner = new Scanner(System.in);
-			System.err.print("Type '/help' to see options. Else interact to your liking\n");
+			System.out.print("Type '/help' to see available commands.\n");
 			while (true) {
 				String scannerin = scanner.next();
 				if (scannerin.equals("/exit")) {
@@ -54,8 +54,8 @@ public class Server {
 				} else if (scannerin.equals("/ls")) {
 					System.out.println(s.listAllClients());
 				} else if (scannerin.equals("/help")) {
-					System.err.println(
-							"/help ... shows this page\n/exit ... closes the server and disconnects clients\n/ls ... lists all active clients");
+					System.out.println(
+							"/help ... shows this list\n/exit ... closes the server\n /ls ... lists all clients");
 				} else {
 					s.sendToAllClients("<SERVER> " + scannerin);
 					System.out.println("<SERVER> " + scannerin);
@@ -109,7 +109,7 @@ public class Server {
 						} else if (nachricht.equals("ls")) {
 							listAllClients(writer);
 						} else {
-							appendTextToConsole(nachricht, LEVEL_NORMAL);
+							appendTextToConsole(nachricht, NORMAL);
 							sendToAllClients(nachricht);
 
 						}
@@ -139,19 +139,19 @@ public class Server {
 	public boolean runServer() {
 		try {
 			server = new ServerSocket(5050);
-			appendTextToConsole("Server wurde gestartet!", LEVEL_ERROR);
+			appendTextToConsole("Server wurde gestartet!", NORMAL);
 
 			list_clientWriter = new HashMap<PrintWriter, String>();
 			return true;
 		} catch (IOException e) {
-			appendTextToConsole("Server konnte nicht gestartet werden!", LEVEL_ERROR);
+			appendTextToConsole("Server konnte nicht gestartet werden!", ERROR);
 			e.printStackTrace();
 			return false;
 		}
 	}
 
-	public void appendTextToConsole(String message, int level) {
-		if (level == LEVEL_ERROR) {
+	public void appendTextToConsole(String message, int type) {
+		if (type == ERROR) {
 			System.err.println(message + "\n");
 		} else {
 			System.out.println(message + "\n");
